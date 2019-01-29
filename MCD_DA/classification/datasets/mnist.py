@@ -3,7 +3,7 @@ from scipy.io import loadmat
 
 
 def load_mnist(scale=True, usps=False, all_use=False):
-    mnist_data = loadmat('../data/mnist_data.mat')
+    mnist_data = loadmat('MCD_DA/classification/data/mnist_data.mat')
     if scale:
         mnist_train = np.reshape(mnist_data['train_32'], (55000, 32, 32, 1))
         mnist_test = np.reshape(mnist_data['test_32'], (10000, 32, 32, 1))
@@ -15,7 +15,7 @@ def load_mnist(scale=True, usps=False, all_use=False):
         mnist_labels_test = mnist_data['label_test']
     else:
         mnist_train = mnist_data['train_28']
-        mnist_test =  mnist_data['test_28']
+        mnist_test = mnist_data['test_28']
         mnist_labels_train = mnist_data['label_train']
         mnist_labels_test = mnist_data['label_test']
         mnist_train = mnist_train.astype(np.float32)

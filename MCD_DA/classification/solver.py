@@ -4,8 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
-from model.build_gen import *
-from datasets.dataset_read import dataset_read
+from .model.build_gen import *
+from .datasets.dataset_read import dataset_read
 
 
 # Training settings
@@ -26,8 +26,11 @@ class Solver(object):
         else:
             self.scale = False
         print('dataset loading')
-        self.datasets, self.dataset_test = dataset_read(source, target, self.batch_size, scale=self.scale,
-                                                        all_use=self.all_use)
+        self.datasets, self.dataset_test = dataset_read(source, target,
+                                                        self.batch_size,
+                                                        scale=self.scale,
+                                                        all_use=self.all_use
+                                                        )
         print('load finished!')
         self.G = Generator(source=source, target=target)
         self.C1 = Classifier(source=source, target=target)
@@ -134,7 +137,7 @@ class Solver(object):
             self.opt_c2.step()
             self.reset_grad()
 
-            for i in xrange(self.num_k):
+            for i in range(self.num_k):
                 #
                 feat_t = self.G(img_t)
                 output_t1 = self.C1(feat_t)
@@ -188,7 +191,7 @@ class Solver(object):
             output_t1 = self.C1(feat_t, reverse=True)
             output_t2 = self.C2(feat_t, reverse=True)
             loss_dis = -self.discrepancy(output_t1, output_t2)
-            #loss_dis.backward()
+            # loss_dis.backward()
             self.opt_c1.step()
             self.opt_c2.step()
             self.opt_g.step()

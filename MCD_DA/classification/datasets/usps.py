@@ -1,6 +1,6 @@
 import numpy as np
 import gzip
-import cPickle
+import pickle as cPickle
 
 
 def load_usps(all_use=False):

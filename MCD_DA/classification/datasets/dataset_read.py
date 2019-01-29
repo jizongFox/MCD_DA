@@ -1,12 +1,12 @@
 import sys
-
-sys.path.append('../loader')
 from .unaligned_data_loader import UnalignedDataLoader
 from .svhn import load_svhn
 from .mnist import load_mnist
 from .usps import load_usps
 from .gtsrb import load_gtsrb
 from .synth_traffic import load_syntraffic
+
+sys.path.append('../loader')
 
 
 def return_dataset(data, scale=False, usps=False, all_use='no'):
@@ -39,11 +39,14 @@ def dataset_read(source, target, batch_size, scale=False, all_use='no'):
     if source == 'usps' or target == 'usps':
         usps = True
 
-    train_source, s_label_train, test_source, s_label_test = return_dataset(source, scale=scale,
-                                                                            usps=usps, all_use=all_use)
-    train_target, t_label_train, test_target, t_label_test = return_dataset(target, scale=scale, usps=usps,
+    train_source, s_label_train, test_source, s_label_test = return_dataset(source,
+                                                                            scale=scale,
+                                                                            usps=usps,
                                                                             all_use=all_use)
-
+    train_target, t_label_train, test_target, t_label_test = return_dataset(target,
+                                                                            scale=scale,
+                                                                            usps=usps,
+                                                                            all_use=all_use)
 
     S['imgs'] = train_source
     S['labels'] = s_label_train
