@@ -8,6 +8,7 @@ import torch
 from PIL import Image
 
 
+## highlight files containing transformation of PIL images
 class Scale(object):
     def __init__(self, size, interpolation=Image.BILINEAR):
         assert isinstance(size, int) or (isinstance(size, collections.Iterable) and len(size) == 2)
@@ -31,6 +32,7 @@ class Scale(object):
             return img.resize(self.size, self.interpolation)
 
 
+## highlight: what does it do here.
 class ToParallel(object):
     def __init__(self, transforms):
         self.transforms = transforms
@@ -96,12 +98,12 @@ class ToSP(object):
 class HorizontalFlip(object):
     """Horizontally flips the given PIL.Image with a probability of 0.5."""
 
-    def __call__(self, img):
+    def __call__(self, img: Image.Image) -> Image.Image:
         return img.transpose(Image.FLIP_LEFT_RIGHT)
 
 
 class VerticalFlip(object):
-    def __call__(self, img):
+    def __call__(self, img:Image.Image) -> Image.Image:
         return img.transpose(Image.FLIP_TOP_BOTTOM)
 
 

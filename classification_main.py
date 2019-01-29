@@ -3,6 +3,9 @@ import argparse
 import torch
 from MCD_DA.classification.solver import Solver
 import os
+from pprint import pprint
+import warnings
+warnings.filterwarnings('ignore')
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch MCD Implementation')
@@ -43,7 +46,7 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
-print(args)
+pprint(vars(args))
 
 
 def main():

@@ -33,7 +33,7 @@ python adapt_tester.py city ./train_output/gta-train2city-train_3ch/pth/normal-d
 
 Results will be saved under "./test_output/gta-train2city-train_3ch---city-val/normal-drn_d_105-res50-EPOCH.tar"
 
-<!-- 
+
 #### CRF postprocessing
 To use crf.py, you need to install pydensecrf. (https://github.com/lucasb-eyer/pydensecrf)
 
@@ -66,7 +66,7 @@ python visualize_result.py --indir_list outputs/loss-weighted152-test-g-0.001000
 ![](_static/vis_with_legend.png)
 
 Results will be saved under "./outputs/YOUR_MODEL_NAME/vis_with_legend".
--->
+
 
 
 ### Evaluation

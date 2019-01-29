@@ -106,3 +106,5 @@ ENV/
 MCD_DA/classification/.DS_Store
 MCD_DA/classification/data/.DS_Store
 MCD_DA/classification/data
+record/
+train_output

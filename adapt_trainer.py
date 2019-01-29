@@ -9,13 +9,14 @@ from tensorboard_logger import configure, log_value
 from torch.autograd import Variable
 from torch.utils import data
 from torchvision.transforms import Compose, Normalize, ToTensor
-from .argmyparse import add_additional_params_to_args, fix_img_shape_args, get_da_mcd_training_parser
-from .datasets import ConcatDataset, get_dataset, check_src_tgt_ok
-from .loss import CrossEntropyLoss2d, get_prob_distance_criterion
-from .models.model_util import get_models, get_optimizer
-from .transform import ReLabel, ToLabel, Scale, RandomSizedCrop, RandomHorizontalFlip, RandomRotation
-from .util import mkdir_if_not_exist, save_dic_to_json, check_if_done, save_checkpoint, adjust_learning_rate, \
-    get_class_weight_from_file
+
+from MCD_DA.segmentation.argmyparse import add_additional_params_to_args, fix_img_shape_args, get_da_mcd_training_parser
+from MCD_DA.segmentation.datasets import ConcatDataset, get_dataset, check_src_tgt_ok
+from MCD_DA.segmentation.loss import CrossEntropyLoss2d, get_prob_distance_criterion
+from MCD_DA.segmentation.models.model_util import get_models, get_optimizer
+from MCD_DA.segmentation.transform import ReLabel, ToLabel, Scale, RandomSizedCrop, RandomHorizontalFlip, RandomRotation
+from MCD_DA.segmentation.util import mkdir_if_not_exist, save_dic_to_json, check_if_done, save_checkpoint, \
+    adjust_learning_rate, get_class_weight_from_file
 
 parser = get_da_mcd_training_parser()
 args = parser.parse_args()
@@ -39,7 +40,7 @@ if args.resume:
 
     old_savename = args.savename
     args.savename = infn.split("-")[0]
-    print ("savename is %s (original savename %s was overwritten)" % (args.savename, old_savename))
+    print("savename is %s (original savename %s was overwritten)" % (args.savename, old_savename))
 
     checkpoint = torch.load(args.resume)
     start_epoch = checkpoint["epoch"]
@@ -72,7 +73,7 @@ else:
     optimizer_f = get_optimizer(list(model_f1.parameters()) + list(model_f2.parameters()), opt=args.opt,
                                 lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 if args.uses_one_classifier:
-    print ("f1 and f2 are same!")
+    print("f1 and f2 are same!")
     model_f2 = model_f1
 
 mode = "%s-%s2%s-%s_%sch" % (args.src_dataset, args.src_split, args.tgt_dataset, args.tgt_split, args.input_ch)

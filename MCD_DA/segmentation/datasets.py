@@ -9,9 +9,10 @@ from PIL import Image
 from PIL import ImageOps
 from torch.utils import data
 
-from transform import HorizontalFlip, VerticalFlip
+from .transform import HorizontalFlip, VerticalFlip
 
 
+## highlight it is an inspiring way to combine datasets
 class ConcatDataset(torch.utils.data.Dataset):
     def __init__(self, *datasets):
         self.datasets = datasets
@@ -24,7 +25,7 @@ class ConcatDataset(torch.utils.data.Dataset):
 
 
 def default_loader(path):
-    return Image.open(path)
+    return Image.open(path) # shape: 1,3,4,5 type: int
 
 
 class CityDataSet(data.Dataset):

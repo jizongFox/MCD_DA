@@ -100,17 +100,16 @@ class Solver(object):
                 break
             img_s = img_s.cuda()
             img_t = img_t.cuda()
-            imgs = Variable(torch.cat((img_s, \
-                                       img_t), 0))
-            label_s = Variable(label_s.long().cuda())
+            imgs = torch.cat((img_s, img_t), 0)
+            label_s = label_s.long().cuda()
 
-            img_s = Variable(img_s)
-            img_t = Variable(img_t)
+            # reset the gradient of networks and optimizers
             self.reset_grad()
             feat_s = self.G(img_s)
             output_s1 = self.C1(feat_s)
             output_s2 = self.C2(feat_s)
 
+            ## classification loss for c1 and c2
             loss_s1 = criterion(output_s1, label_s)
             loss_s2 = criterion(output_s2, label_s)
             loss_s = loss_s1 + loss_s2
@@ -120,9 +119,14 @@ class Solver(object):
             self.opt_c2.step()
             self.reset_grad()
 
+            ## update classifcation loss first
+
             feat_s = self.G(img_s)
             output_s1 = self.C1(feat_s)
             output_s2 = self.C2(feat_s)
+            ## the same feature as before
+
+            ## features generated for target image
             feat_t = self.G(img_t)
             output_t1 = self.C1(feat_t)
             output_t2 = self.C2(feat_t)
@@ -136,9 +140,10 @@ class Solver(object):
             self.opt_c1.step()
             self.opt_c2.step()
             self.reset_grad()
+            # only update the classifiers to make the prediction different on the target image and keep the same \
+            # prediction on the source labels
 
             for i in range(self.num_k):
-                #
                 feat_t = self.G(img_t)
                 output_t1 = self.C1(feat_t)
                 output_t2 = self.C2(feat_t)
@@ -152,10 +157,10 @@ class Solver(object):
             if batch_idx % self.interval == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss1: {:.6f}\t Loss2: {:.6f}\t  Discrepancy: {:.6f}'.format(
                     epoch, batch_idx, 100,
-                    100. * batch_idx / 70000, loss_s1.data[0], loss_s2.data[0], loss_dis.data[0]))
+                    100. * batch_idx / 70000, loss_s1.item(), loss_s2.item(), loss_dis.item()))
                 if record_file:
                     record = open(record_file, 'a')
-                    record.write('%s %s %s\n' % (loss_dis.data[0], loss_s1.data[0], loss_s2.data[0]))
+                    record.write('%s %s %s\n' % (loss_dis.item(), loss_s1.item(), loss_s2.item()))
                     record.close()
         return batch_idx
 
@@ -185,6 +190,8 @@ class Solver(object):
             loss_s2 = criterion(output_s2, label_s)
             loss_s = loss_s1 + loss_s2
             loss_s.backward(retain_variables=True)
+            ## for supervised loss
+
             feat_t = self.G(img_t)
             self.C1.set_lambda(1.0)
             self.C2.set_lambda(1.0)

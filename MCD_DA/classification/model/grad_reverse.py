@@ -6,6 +6,7 @@ class GradReverse(Function):
         self.lambd = lambd
 
     def forward(self, x):
+        ## return a new copy of x with the same shape.
         return x.view_as(x)
 
     def backward(self, grad_output):

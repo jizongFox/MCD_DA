@@ -25,10 +25,10 @@ def merge_four_images(files, outimg):
     img = [Image.open(file_) for file_ in files]
 
     img_size = img[0].size
-    merged_img = Image.new('RGB', (img_size[0]*2, img_size[1]*2))
+    merged_img = Image.new('RGB', (img_size[0] * 2, img_size[1] * 2))
     for row in range(2):
         for col in range(2):
-            merged_img.paste(img[row*2+col], (img_size[0]*row, img_size[1]*col))
+            merged_img.paste(img[row * 2 + col], (img_size[0] * row, img_size[1] * col))
 
     merged_img.save(outimg)
 
@@ -41,7 +41,7 @@ def main(vis_dirs, outdir):
         os.mkdir(outdir)
 
     for i, filename in enumerate(os.listdir(vis_dirs[0])):
-        if i%100 == 0:
+        if i % 100 == 0:
             print(i)
         try:
             files = [os.path.join(vis_dir, filename) for vis_dir in vis_dirs]
@@ -49,6 +49,7 @@ def main(vis_dirs, outdir):
             merge_four_images(files, outimg)
         except:
             print(filename)
+
 
 if __name__ == '__main__':
     args = sys.argv

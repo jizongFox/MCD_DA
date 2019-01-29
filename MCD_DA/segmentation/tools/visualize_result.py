@@ -5,7 +5,7 @@ import os
 import matplotlib
 from PIL import Image
 
-from transform import Colorize
+from ..transform import Colorize
 
 matplotlib.use('Agg')
 import matplotlib.patches as mpatches
@@ -14,7 +14,7 @@ import numpy as np
 import scipy.misc as m
 from tqdm import tqdm
 
-from util import mkdir_if_not_exist
+from ..util import mkdir_if_not_exist
 
 label_list = [
     "road",

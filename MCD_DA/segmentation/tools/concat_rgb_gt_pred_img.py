@@ -11,7 +11,7 @@ import random
 import numpy as np
 from PIL import Image
 
-from util import mkdir_if_not_exist
+from ..util import mkdir_if_not_exist
 
 VIS_GT_DIR_DIC = {
     "city": "/data/unagi0/watanabe/DomainAdaptation/Segmentation/VisDA2017/cityscapes_vis_gt/val",

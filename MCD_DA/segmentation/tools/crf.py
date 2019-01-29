@@ -8,7 +8,7 @@ import scipy.misc as m
 from PIL import Image
 from tqdm import tqdm
 
-from util import mkdir_if_not_exist
+from ..util import mkdir_if_not_exist
 
 
 def dense_crf(probs, img=None, n_iters=10,
@@ -79,13 +79,11 @@ if __name__ == '__main__':
     parser.add_argument('--raw_img_indir', type=str, default=None,
                         help="input directory that contains raw imgs(valid:'/data/unagi0/watanabe/DomainAdaptation/Segmentation/VisDA2017/cityscapes_val_imgs', test:'/data/ugui0/dataset/adaptation/segmentation_test')")
 
-
     args = parser.parse_args()
 
     args.outimg_shape = [int(x) for x in args.outimg_shape]
 
     mkdir_if_not_exist(args.outdir)
-
 
     for one_file in tqdm(os.listdir(args.prob_indir)):
         one_npy_fn = os.path.join(args.prob_indir, one_file)

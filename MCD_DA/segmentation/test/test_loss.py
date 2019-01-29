@@ -7,7 +7,7 @@ import torch
 from torch.autograd import Variable
 
 sys.path.append("../")
-from loss import MySymkl2d, Symkl2d
+from ..loss import MySymkl2d, Symkl2d
 
 
 def kld(p, q):
