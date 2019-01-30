@@ -5,7 +5,7 @@ import os
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
-from util import mkdir_if_not_exist
+from ..util import mkdir_if_not_exist
 
 parser = argparse.ArgumentParser(description='GT Coloring')
 parser.add_argument('dataset', choices=["gta", "city", "test", "ir", "city16"])

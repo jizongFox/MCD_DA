@@ -38,7 +38,7 @@ def yes_no_input():
 
 def check_if_done(filename):
     if os.path.exists(filename):
-        print ("%s already exists. Is it O.K. to overwrite it and start this program?" % filename)
+        print("%s already exists. Is it O.K. to overwrite it and start this program?" % filename)
         if not yes_no_input():
             raise Exception("Please restart training after you set args.savename differently!")
 
@@ -72,15 +72,15 @@ def save_dic_to_json(dic, fn, verbose=True):
     with open(fn, "w") as f:
         json_str = json.dumps(dic, sort_keys=True, indent=4)
         if verbose:
-            print (json_str)
+            print(json_str)
         f.write(json_str)
-    print ("param file '%s' was saved!" % fn)
+    print("param file '%s' was saved!" % fn)
 
 
 def emphasize_str(string):
-    print ('#' * 100)
-    print (string)
-    print ('#' * 100)
+    print('#' * 100)
+    print(string)
+    print('#' * 100)
 
 
 def adjust_learning_rate(optimizer, lr_init, decay_rate, epoch, num_epochs, decay_epoch=15):
@@ -105,3 +105,9 @@ def get_class_weight_from_file(n_class, weight_filename=None, add_bg_loss=False)
     if not add_bg_loss:
         weight[n_class - 1] = 0  # Ignore background loss
     return weight
+
+
+def min_max_normalize(tensor: torch.Tensor) -> torch.Tensor:
+    max_value = tensor.max()
+    min_value = tensor.min()
+    return (tensor - min_value) / (max_value - min_value)

@@ -2,7 +2,6 @@ import collections
 import glob
 import os
 import os.path as osp
-
 import numpy as np
 import torch
 from PIL import Image
@@ -25,12 +24,12 @@ class ConcatDataset(torch.utils.data.Dataset):
 
 
 def default_loader(path):
-    return Image.open(path) # shape: 1,3,4,5 type: int
+    return Image.open(path)  # shape: 1,3,4,5 type: int
 
 
 class CityDataSet(data.Dataset):
     def __init__(self, root, split="train", img_transform=None, label_transform=None, test=True,
-                 label_type=None):
+                 label_type=None, input_ch=3):
         self.root = root
         self.split = split
         # self.mean_bgr = np.array([104.00698793, 116.66876762, 122.67891434])
@@ -46,12 +45,12 @@ class CityDataSet(data.Dataset):
         with open(imgsets_dir) as imgset_file:
             for name in imgset_file:
                 name = name.strip()
-                img_file = osp.join(data_dir, "leftImg8bit/%s" % name)
+                img_file = osp.join(data_dir, "leftImg8bit/%s/%s" % (split, name))
                 if label_type == "label16":
                     name = name.replace('leftImg8bit', 'gtFine_label16IDs')
                 else:
-                    name = name.replace('leftImg8bit', 'gtFine_labelTrainIds')
-                label_file = osp.join(data_dir, "gtFine/%s" % name)
+                    name = name.replace('leftImg8bit', 'gtFine_labelIds')
+                label_file = osp.join(data_dir, "gtFine/%s/%s" % (split, name))
                 self.files[split].append({
                     "img": img_file,
                     "label": label_file
@@ -107,7 +106,7 @@ class GTADataSet(data.Dataset):
                 name = name.strip()
                 img_file = osp.join(data_dir, "%s" % name)
                 # name = name.replace('leftImg8bit','gtFine_labelTrainIds')
-                label_file = osp.join(data_dir, "%s" % name.replace('images', 'labels_gt'))
+                label_file = osp.join(data_dir, "%s" % name).replace('images', 'labels')
                 self.files[split].append({
                     "img": img_file,
                     "label": label_file
@@ -242,8 +241,10 @@ def get_dataset(dataset_name, split, img_transform, label_transform, test, input
     }
     ##Note fill in the blank below !! "gta....fill the directory over images folder.
     name2root = {
-        "gta": "",  ## Fill the directory over images folder. put train.txt, val.txt in this folder
-        "city": "",  ## ex, ./www.cityscapes-dataset.com/file-handling
+        "gta": "/media/jizong/Jizong/dataset/GTA-5/images",
+        ## Fill the directory over images folder. put train.txt, val.txt in this folder
+        "city": "/home/jizong/Workspace/ReproduceAdaptSegNet/data/Cityscapes/data/",
+        ## ex, ./www.cityscapes-dataset.com/file-handling
         "city16": "",  ## Same as city
         "synthia": "",  ## synthia/RAND_CITYSCAPES",
     }

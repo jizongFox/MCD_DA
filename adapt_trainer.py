@@ -4,6 +4,9 @@ import os
 
 import torch
 import tqdm
+import warnings
+
+warnings.filterwarnings('ignore')
 from PIL import Image
 from tensorboard_logger import configure, log_value
 from torch.autograd import Variable
@@ -16,7 +19,7 @@ from MCD_DA.segmentation.loss import CrossEntropyLoss2d, get_prob_distance_crite
 from MCD_DA.segmentation.models.model_util import get_models, get_optimizer
 from MCD_DA.segmentation.transform import ReLabel, ToLabel, Scale, RandomSizedCrop, RandomHorizontalFlip, RandomRotation
 from MCD_DA.segmentation.util import mkdir_if_not_exist, save_dic_to_json, check_if_done, save_checkpoint, \
-    adjust_learning_rate, get_class_weight_from_file
+    adjust_learning_rate, get_class_weight_from_file, min_max_normalize
 
 parser = get_da_mcd_training_parser()
 args = parser.parse_args()
@@ -98,7 +101,7 @@ if resume_flg:
     json_fn = os.path.join(args.outdir, "param-%s_resume.json" % model_name)
 else:
     json_fn = os.path.join(outdir, "param-%s.json" % model_name)
-check_if_done(json_fn)
+# check_if_done(json_fn)
 save_dic_to_json(args.__dict__, json_fn)
 
 train_img_shape = tuple([int(x) for x in args.train_img_shape])
@@ -121,6 +124,7 @@ label_transform = Compose([
     Scale(train_img_shape, Image.NEAREST),
     ToLabel(),
     ReLabel(255, args.n_class - 1),  # Last Class is "Void" or "Background" class
+    ## relabel 255 pixels to 19, while keeping 0-18 to be the same
 ])
 
 src_dataset = get_dataset(dataset_name=args.src_dataset, split=args.src_split, img_transform=img_transform,
@@ -158,8 +162,8 @@ for epoch in range(start_epoch, args.epochs):
     c_loss_per_epoch = 0
 
     for ind, (source, target) in tqdm.tqdm(enumerate(train_loader)):
-        src_imgs, src_lbls = Variable(source[0]), Variable(source[1])
-        tgt_imgs = Variable(target[0])
+        src_imgs, src_lbls = source[0], source[1]
+        tgt_imgs = target[0]
 
         if torch.cuda.is_available():
             src_imgs, src_lbls, tgt_imgs = src_imgs.cuda(), src_lbls.cuda(), tgt_imgs.cuda()
@@ -167,17 +171,18 @@ for epoch in range(start_epoch, args.epochs):
         # update generator and classifiers by source samples
         optimizer_g.zero_grad()
         optimizer_f.zero_grad()
-        loss = 0
+        loss = torch.Tensor([0]).cuda()
         loss_weight = [1.0, 1.0]
-        outputs = model_g(src_imgs)
+        outputs = model_g(src_imgs)  ## feature map of 20 dim with h and w reduced by 8
 
         outputs1 = model_f1(outputs)
         outputs2 = model_f2(outputs)
+        # src_lbls[src_lbls > 19] = 0
 
         loss += criterion(outputs1, src_lbls)
         loss += criterion(outputs2, src_lbls)
         loss.backward()
-        c_loss = loss.data[0]
+        c_loss = loss.item()
         c_loss_per_epoch += c_loss
 
         optimizer_g.step()
@@ -185,6 +190,8 @@ for epoch in range(start_epoch, args.epochs):
         # update for classifiers
         optimizer_g.zero_grad()
         optimizer_f.zero_grad()
+        ## for both feature generator and classifiers
+
         outputs = model_g(src_imgs)
         outputs1 = model_f1(outputs)
         outputs2 = model_f2(outputs)
@@ -200,7 +207,7 @@ for epoch in range(start_epoch, args.epochs):
 
         d_loss = 0.0
         # update generator by discrepancy
-        for i in xrange(args.num_k):
+        for i in range(args.num_k):
             optimizer_g.zero_grad()
             loss = 0
             outputs = model_g(tgt_imgs)
@@ -210,7 +217,7 @@ for epoch in range(start_epoch, args.epochs):
             loss.backward()
             optimizer_g.step()
 
-        d_loss += loss.data[0] / args.num_k
+        d_loss += loss.item() / args.num_k
         d_loss_per_epoch += d_loss
         if ind % 100 == 0:
             print("iter [%d] DLoss: %.6f CLoss: %.4f" % (ind, d_loss, c_loss))
